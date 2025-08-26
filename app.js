@@ -84,171 +84,49 @@
   // Flag to indicate that community data has been loaded from CSV.
   let communityDataLoaded = false;
 
-  /**
-   * Attempt to fetch an additional community CSV file and merge the
-   * results into the global DATA object.  The file should be placed
-   * in the same directory as index.html and named
-   * "Supabase Snippet Community Data Retrieval.csv".  Each row should
-   * contain at least a name, description, interests and image URL.
-   * This function heuristically assigns a type to each person based
-   * on keywords in the role or organisation columns and creates
-   * links to existing entities when interests overlap.  If the file
-   * cannot be retrieved, the function quietly returns and the
-   * application continues using the built‑in sample data.
-   */
   async function loadCommunityData() {
-    // Only load community data once per session
-    if (communityDataLoaded) return;
-    try {
-      let text = null;
-      // Try to load a simple community CSV first.  Users may provide
-      // their export as "Community.csv".  If that fails, fall back to the
-      // legacy filename with spaces.  Both requests are attempted via
-      // fetch() so they work when served from a local filesystem or
-      // GitHub Pages.  Any network or file errors will be silently
-      // ignored and the built‑in sample data will remain.
-      const candidates = ['Community.csv', 'Supabase Snippet Community Data Retrieval.csv'];
-      for (const fname of candidates) {
-        try {
-          const resp = await fetch(encodeURI(fname));
-          if (resp.ok) {
-            text = await resp.text();
-            break;
-          }
-        } catch (err) {
-          // ignore and try next candidate
-        }
+  if (communityDataLoaded) return;
+
+  try {
+    if (supabaseClient) {
+      const { data, error } = await supabaseClient
+        .from('community')
+        .select('*');
+
+      if (error) {
+        console.error('❌ Failed to load community data from Supabase:', error.message);
+        return;
       }
-      if (!text) {
-        // If no CSV data was found, attempt to fetch from Supabase
-        // below.  We do not return here because we still want
-        // Supabase to run.  Note: the rest of the CSV processing is
-        // skipped when text is null.
+
+      if (data && data.length > 0) {
+        console.log(`✅ Loaded ${data.length} community members from Supabase`);
+
+        const newNodes = data.map(row => ({
+          id: row.id || ('person-' + Math.random().toString(36).slice(2)),
+          name: row.name || row.email || 'Unknown',
+          type: 'person',
+          category: 'person',
+          size: 6 + (typeof row.endorsements === 'number' ? Math.min(row.endorsements, 4) : 0),
+          description: row.bio || 'No description provided.',
+          website: '',
+          image_url: row.image_url || undefined,
+          interests: Array.isArray(row.interests)
+            ? row.interests.map(s => String(s).toLowerCase())
+            : []
+        }));
+
+        DATA.nodes.push(...newNodes);
+        communityDataLoaded = true;
+      } else {
+        console.warn('⚠️ Supabase community table returned no rows.');
       }
-      let newNodes = [];
-      let newLinks = [];
-      // If we successfully loaded a CSV, parse it into person nodes
-      if (text) {
-        const lines = text.trim().split(/\r?\n/);
-        if (lines.length >= 2) {
-          const header = lines.shift().split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map((h) => h.trim());
-          // Helper to slugify names into ids
-          const slugify = (str) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$|/g, '');
-          // Determine column indices for common fields
-          const idxName = header.findIndex((h) => /name/i.test(h));
-          const idxDesc = header.findIndex((h) => /summary|bio|description/i.test(h));
-          const idxRole = header.findIndex((h) => /role|title|function/i.test(h));
-          const idxOrg = header.findIndex((h) => /company|organisation|organization/i.test(h));
-          const idxInterests = header.findIndex((h) => /interests/i.test(h));
-          const idxImg = header.findIndex((h) => /image|photo|avatar/i.test(h));
-          lines.forEach((line) => {
-            const cells = line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
-            const name = cells[idxName] ? cells[idxName].replace(/^\"|\"$/g, '') : '';
-            if (!name) return;
-            const desc = cells[idxDesc] ? cells[idxDesc].replace(/^\"|\"$/g, '') : '';
-            const role = cells[idxRole] ? cells[idxRole].toLowerCase() : '';
-            const org = cells[idxOrg] ? cells[idxOrg].toLowerCase() : '';
-            const interestsRaw = cells[idxInterests] ? cells[idxInterests].toLowerCase() : '';
-            const interests = interestsRaw ? interestsRaw.split(/;|,|\|/).map((s) => s.trim()).filter(Boolean) : [];
-            const image = cells[idxImg] ? cells[idxImg].trim() : '';
-            // Determine type based on role or organisation
-            let type = 'serviceProvider';
-            const combined = role + ' ' + org;
-            if (/investor|vc|venture|capital|fund|associate/.test(combined)) {
-              type = 'investor';
-            } else if (/incubator|accelerator/.test(combined)) {
-              type = 'incubator';
-            } else if (/university|college|faculty/.test(combined)) {
-              type = 'university';
-            } else if (/startup|founder|ceo|cto/.test(combined)) {
-              type = 'startup';
-            }
-            const id = slugify(name) || ('person-' + Math.random().toString(36).slice(2));
-            const node = {
-              id,
-              name,
-              type,
-              category: type,
-              size: 6,
-              description: desc || 'No description provided.',
-              website: '',
-              image_url: image || undefined,
-              interests
-            };
-            newNodes.push(node);
-          });
-        }
-      }
-      // If Supabase is configured, attempt to fetch rows from the
-      // 'community' table and convert them into person nodes.  The
-      // schema is expected to include: id (uuid), name (text), bio
-      // (text), image_url (text) and interests (array).  Extra
-      // fields (skills, endorsements) are ignored here but could be
-      // used to influence node size or type in future versions.
-      if (usesSupabase && supabaseClient) {
-        try {
-          const { data: rows, error } = await supabaseClient.from('community').select('*');
-          if (!error && rows && Array.isArray(rows)) {
-            rows.forEach((row) => {
-              const id = row.id || ('person-' + Math.random().toString(36).slice(2));
-              const name = row.name || row.email || 'Unknown';
-              const desc = row.bio || '';
-              const interests = Array.isArray(row.interests) ? row.interests.map((s) => String(s).toLowerCase()) : [];
-              const image = row.image_url || '';
-              // Determine type for community members. We classify
-              // everyone pulled from Supabase as a 'person' unless
-              // interests suggest otherwise. You can customise this
-              // mapping based on your schema.
-              const node = {
-                id: String(id),
-                name,
-                type: 'person',
-                category: 'person',
-                size: 6 + (typeof row.endorsements === 'number' ? Math.min(row.endorsements, 4) : 0),
-                description: desc || 'No description provided.',
-                website: '',
-                image_url: image || undefined,
-                interests
-              };
-              newNodes.push(node);
-            });
-          } else if (error) {
-            console.warn('Supabase community fetch error:', error.message);
-          }
-        } catch (err2) {
-          console.warn('Supabase community fetch failed:', err2.message);
-        }
-      }
-      // Build connections between new nodes and existing sample
-      if (newNodes.length > 0) {
-        // Preprocess existing descriptions for interest matching
-        const existingNodes = DATA.nodes;
-        existingNodes.forEach((en) => {
-          en._fullText = (en.name + ' ' + en.description).toLowerCase();
-        });
-        newNodes.forEach((pn) => {
-          existingNodes.forEach((en) => {
-            if (!pn.interests || pn.interests.length === 0) return;
-            const match = pn.interests.some((interest) => en._fullText.includes(interest));
-            if (match) {
-              newLinks.push({
-                source: pn.id,
-                target: en.id,
-                type: 'interest',
-                description: `${pn.name} shares interest(s) with ${en.name}`
-              });
-            }
-          });
-        });
-        // Merge into global data
-        DATA.nodes = DATA.nodes.concat(newNodes);
-        DATA.links = DATA.links.concat(newLinks);
-      }
-      communityDataLoaded = true;
-    } catch (err) {
-      console.warn('Community data load failed:', err.message);
+    } else {
+      console.warn('⚠️ Supabase client not configured, cannot load community data.');
     }
+  } catch (err) {
+    console.error('❌ Exception while loading Supabase community data:', err);
   }
+}
 
 
   // DOM elements
