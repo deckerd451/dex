@@ -1,0 +1,587 @@
+/*
+ * Theme variables for dark and light modes.  These are largely
+ * inherited from the previous Dex styles but have been expanded to
+ * support a starry background and connection details.  Colors are
+ * tuned to provide high contrast on dark backgrounds and a clean look
+ * on light backgrounds.
+ */
+:root[data-theme='dark'] {
+  --bg: #0b1320;
+  --panel-bg: #152238;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border: #334155;
+  --input-bg: #0f172a;
+  --accent: #10b981;
+  --accent-hover: #059669;
+}
+
+:root[data-theme='light'] {
+  --bg: #ffffff;
+  --panel-bg: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border: #cbd5e1;
+  --input-bg: #ffffff;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Starfield canvas sits behind all other content */
+#starfield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.persona-badge {
+  background: var(--accent);
+  color: #fff;
+  padding: 0.35rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: background 0.2s ease;
+}
+
+/* Change persona button mirrors the styling of the theme toggle. */
+.change-persona {
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: background 0.2s ease;
+  margin-right: 0.25rem;
+}
+
+.change-persona:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.theme-toggle:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.persona-selector {
+  margin: auto;
+  text-align: center;
+  max-width: 600px;
+  padding: 2rem;
+}
+
+.persona-selector h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.persona-selector p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.persona-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.persona-option {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+}
+
+.persona-option:hover {
+  background: var(--accent-hover);
+}
+
+.dex-app {
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+
+.dex-app.hidden {
+  display: none;
+}
+
+.graph-area {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+.graph-area svg {
+  width: 100%;
+  height: 100%;
+  cursor: move;
+  overflow: hidden;
+}
+
+/* Style for node labels.  They are drawn in the SVG by the script and
+   should not intercept pointer events. */
+.graph-area text {
+  font-size: 0.75rem;
+  fill: var(--text-primary);
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+.sidebar {
+  flex: 0 0 320px;
+  max-width: 100%;
+  padding: 0.75rem;
+  overflow-y: auto;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+}
+
+/* Panel base */
+.panel {
+  background: var(--panel-bg);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 0.9rem;
+}
+
+.panel h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Photos displayed in the details panel.  The image fills the
+   available width while maintaining its aspect ratio.  Rounded
+   corners and a soft glow echo the aesthetic of the graph nodes. */
+.node-photo {
+  width: 100%;
+  max-width: 220px;
+  display: block;
+  margin: 0 auto 0.75rem auto;
+  border-radius: 8px;
+  filter: drop-shadow(0 0 3px var(--pulse-colour)) drop-shadow(0 0 6px var(--pulse-colour));
+}
+
+/* Watchlist specific */
+.watchlist-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.watchlist-panel li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.watchlist-name {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent);
+  cursor: pointer;
+  text-align: left;
+}
+
+.watchlist-name:hover {
+  text-decoration: underline;
+}
+
+.remove-button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.remove-button:hover {
+  color: var(--accent);
+}
+
+/* Alerts specific */
+.alerts-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.alert-item {
+  margin-bottom: 0.75rem;
+}
+
+.alert-title {
+  display: block;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.alert-description {
+  color: var(--text-primary);
+}
+
+/* Details panel specific */
+.details-panel .details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.details-panel .close-button {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.details-panel .close-button:hover {
+  color: var(--accent);
+}
+
+.details-panel .node-type {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  text-transform: capitalize;
+}
+
+.details-panel .node-description {
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.details-panel .node-website a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.watchlist-button,
+.save-note-button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  transition: background 0.2s ease;
+}
+
+.watchlist-button:hover,
+.save-note-button:hover {
+  background: var(--accent-hover);
+}
+
+.notes-section {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-section label {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+}
+
+.notes-section textarea {
+  resize: vertical;
+  min-height: 60px;
+  padding: 0.5rem;
+  font-family: inherit;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+/*
+ * Graph glow styling
+ *
+ * The graph uses small, pulsing dots to represent nodes and glowing
+ * lines to represent connections.  The colours of the glows are
+ * derived from CSS custom properties set on each individual element
+ * (see app.js).  The keyframe animations below create a subtle
+ * breathing effect.
+ */
+.graph-area .node-circle {
+  filter: drop-shadow(0 0 3px var(--pulse-colour)) drop-shadow(0 0 6px var(--pulse-colour));
+  animation: pulseGlow 3s infinite alternate;
+  stroke: var(--pulse-colour);
+  stroke-width: 0.5;
+}
+
+@keyframes pulseGlow {
+  from {
+    filter: drop-shadow(0 0 3px var(--pulse-colour)) drop-shadow(0 0 6px var(--pulse-colour));
+  }
+  to {
+    filter: drop-shadow(0 0 6px var(--pulse-colour)) drop-shadow(0 0 12px var(--pulse-colour));
+  }
+}
+
+.graph-area .link-line {
+  stroke-opacity: 0.8;
+  filter: drop-shadow(0 0 2px var(--link-colour)) drop-shadow(0 0 4px var(--link-colour));
+  animation: pulseLine 4s infinite alternate;
+}
+
+@keyframes pulseLine {
+  from {
+    stroke-opacity: 0.6;
+  }
+  to {
+    stroke-opacity: 1;
+  }
+}
+
+/* Fine‑tune node labels for small dots */
+.graph-area .node-label {
+  font-size: 0.6rem;
+  fill: var(--text-primary);
+  pointer-events: none;
+  text-anchor: middle;
+  text-shadow: 0 0 2px var(--bg);
+}
+
+/* Utility */
+.hidden {
+  display: none !important;
+}
+
+/* Authentication screen */
+.auth-screen {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.auth-screen h2 {
+  margin-bottom: 0.5rem;
+}
+
+.auth-screen .lead {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.auth-input {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  background: var(--input-bg);
+  color: var(--text-primary);
+}
+
+.auth-submit {
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.auth-submit:hover {
+  background: var(--accent-hover);
+}
+
+.auth-message {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Auth button in header */
+.auth-button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.auth-button:hover {
+  background: var(--accent-hover);
+}
+
+/* Suggestions panel */
+.suggest-panel {
+  height: 200px;
+  overflow-y: auto;
+}
+.suggest-panel h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+.suggest-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.suggest-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--accent);
+}
+.suggest-list li:hover {
+  text-decoration: underline;
+}
+
+/* Introductory text above the suggestions list explaining
+   how the order is determined.  Use a smaller size and muted colour
+   to distinguish it from list items. */
+.suggest-intro {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+}
+
+/* When suggestions include an explanation, display it below the name
+   in a muted, smaller font. */
+.reason-text {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  margin-top: 0.1rem;
+}
+
+/* Connection (link) details */
+.link-description {
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.connection-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.open-node-button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.open-node-button:hover {
+  background: var(--accent-hover);
+}

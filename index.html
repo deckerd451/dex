@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dex – Building the Brain of Global Innovation</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // Apply stored theme early to prevent flash of incorrect theme
+    (function() {
+      const theme = localStorage.getItem('dex-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <!-- Starfield canvas sits behind all content.  It is initialised in app.js. -->
+  <canvas id="starfield" class="starfield"></canvas>
+  <header class="app-header">
+    <h1 class="app-title">Dex</h1>
+    <div class="header-buttons">
+      <span id="persona-badge" class="persona-badge" style="display:none"></span>
+      <!-- Sign out button (shown only when using Supabase auth and a user is logged in) -->
+      <button id="sign-out" class="auth-button hidden" aria-label="Sign out" title="Sign out">Sign out</button>
+      <!-- Button to reset persona and return to the persona selection screen -->
+      <button id="change-persona" class="change-persona" aria-label="Change persona" title="Change persona">🔄</button>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"></button>
+    </div>
+  </header>
+  <main class="app-content">
+    <!-- Authentication screen -->
+    <section id="auth-screen" class="auth-screen hidden">
+      <h2>Welcome to Dex</h2>
+      <p class="lead">Create an account or sign in to join the network. We'll send you a magic link for passwordless sign‑in.</p>
+      <form id="auth-form" class="auth-form">
+        <input type="email" id="auth-email" class="auth-input" placeholder="you@example.com" required>
+        <button type="submit" class="auth-submit">Send magic link</button>
+      </form>
+      <p id="auth-message" class="auth-message"></p>
+    </section>
+    <!-- Persona selection screen -->
+    <section id="persona-selector" class="persona-selector">
+      <h2>Select your persona</h2>
+      <p>Dex personalises insights and dashboards based on who you are. Pick the role that best describes you to begin.</p>
+      <div id="persona-options" class="persona-options"></div>
+    </section>
+    <!-- Main Dex application -->
+    <section id="dex-app" class="dex-app hidden">
+      <div id="graph-container" class="graph-area"></div>
+      <aside id="sidebar" class="sidebar">
+        <!-- Instructions panel explains how to use Dex.  See app.js for
+             contents populated at runtime. -->
+        <div id="instructions-panel" class="panel instructions-panel"></div>
+        <div id="details-panel" class="panel details-panel"></div>
+        <div id="watchlist-panel" class="panel watchlist-panel"></div>
+        <div id="alerts-panel" class="panel alerts-panel"></div>
+        <div id="suggest-panel" class="panel suggest-panel"></div>
+      </aside>
+    </section>
+  </main>
+  <!-- The main application does not rely on external libraries and is fully
+       self‑contained in app.js and data.js. -->
+  <script src="data.js"></script>
+  <!-- Configuration for Supabase. Fill these values with your own project details. -->
+  <script>
+    // Set these to your Supabase project URL and public anon key. Leave empty to disable Supabase integration and use local storage instead.
+    window.SUPABASE_URL = '';
+    window.SUPABASE_ANON_KEY = '';
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
