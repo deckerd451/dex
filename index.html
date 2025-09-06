@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dex – Building the Brain of Global Innovation</title>
+  <!-- Provide an SVG favicon. You can replace this with your own logo -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // Apply stored theme early to prevent a flash of incorrect theme. The theme
+    // value is persisted in localStorage by app.js when toggled by the user.
+    (function() {
+      const theme = localStorage.getItem('dex-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <!-- Starfield canvas sits behind all content. It is initialised in app.js. -->
+  <canvas id="starfield" class="starfield"></canvas>
+  <header class="app-header">
+    <h1 class="app-title">Dex</h1>
+    <div class="header-buttons">
+      <span id="persona-badge" class="persona-badge" style="display:none"></span>
+      <!-- Sign out button (shown only when using Supabase auth and a user is logged in) -->
+      <button id="sign-out" class="auth-button hidden" aria-label="Sign out" title="Sign out">Sign out</button>
+      <!-- Button to reset persona and return to the persona selection screen -->
+      <button id="change-persona" class="change-persona" aria-label="Change persona" title="Change persona"></button>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"></button>
+    </div>
+  </header>
+  <main class="app-content">
+    <!-- Authentication screen -->
+    <section id="auth-screen" class="auth-screen hidden">
+      <h2>Welcome to Dex</h2>
+      <p class="lead">Create an account or sign in to join the network. We'll send you a magic link for passwordless sign‑in.</p>
+      <form id="auth-form" class="auth-form">
+        <input type="email" id="auth-email" class="auth-input" placeholder="you@example.com" required>
+        <button type="submit" class="auth-submit">Send magic link</button>
+      </form>
+      <p id="auth-message" class="auth-message"></p>
+    </section>
+    <!-- Persona selection screen -->
+    <section id="persona-selector" class="persona-selector">
+      <h2>Select your persona</h2>
+      <p>Dex personalises insights and dashboards based on who you are. Pick the role that best describes you to begin.</p>
+      <div id="persona-options" class="persona-options"></div>
+    </section>
+    <!-- Main Dex application -->
+    <section id="dex-app" class="dex-app hidden">
+      <div id="graph-container" class="graph-area"></div>
+      <aside id="sidebar" class="sidebar">
+        <!-- Instructions panel explains how to use Dex. See app.js for contents populated at runtime. -->
+        <div id="instructions-panel" class="panel instructions-panel"></div>
+        <div id="details-panel" class="panel details-panel"></div>
+        <div id="watchlist-panel" class="panel watchlist-panel"></div>
+        <div id="alerts-panel" class="panel alerts-panel"></div>
+        <div id="suggest-panel" class="panel suggest-panel"></div>
+      </aside>
+    </section>
+  </main>
+  <!-- Load the sample data and alerts. This file was patched to use placehold.co instead of via.placeholder.com. -->
+  <script src="data.js"></script>
+  <!-- Supabase configuration. Fill these values with your own project details. If left empty, the app will fall back to localStorage. -->
+  <script>
+    // The project URL and anon key correspond to the hvmotpzhliufzomewzfl project.
+    // Replace these with your own credentials if you deploy your own Supabase instance.
+    window.SUPABASE_URL = 'https://hvmotpzhliufzomewzfl.supabase.co';
+    window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bW90cHpobGl1ZnpvbWV3emZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1NzY2NDUsImV4cCI6MjA1ODE1MjY0NX0.foHTGZVtRjFvxzDfMf1dpp0Zw4XFfD-FPZK-zRnjc6s';
+  </script>
+  <!-- Main application logic. This file orchestrates the UI, graph, persistence and Supabase integration. -->
+  <script src="app.js"></script>
+</body>
+</html>
