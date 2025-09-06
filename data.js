@@ -3,6 +3,16 @@
 // Colours are encoded per type and reused in CSS by injecting
 // appropriate style attributes.
 
+// NOTE: This copy of the sample data has been modified from the upstream
+// repository to resolve network‑related errors when loading placeholder
+// images. The original code pointed at https://via.placeholder.com which
+// cannot be resolved in some environments (resulting in
+// ERR_NAME_NOT_RESOLVED errors). To avoid these issues the image URLs
+// below now point at https://placehold.co instead. placehold.co is a
+// free service for generating simple placeholder images and is
+// accessible from the runtime environment. If you wish to supply your
+// own images, update the `image_url` fields accordingly.
+
 window.DEX_DATA = {
   /**
    * Colour palette for each node category. These hues are used to
@@ -47,8 +57,9 @@ window.DEX_DATA = {
       category: 'startup',
       size: 10,
       description: 'A healthtech startup developing AI algorithms to assist radiologists with early disease detection.',
-      website: 'https://example.com/ai-diagnostics'
-      , image_url: 'https://via.placeholder.com/200?text=AI+Diagnostics'
+      website: 'https://example.com/ai-diagnostics',
+      // Use placehold.co instead of via.placeholder.com to avoid DNS errors
+      image_url: 'https://placehold.co/200x200?text=AI+Diagnostics'
     },
     {
       id: 'startup2',
@@ -57,8 +68,8 @@ window.DEX_DATA = {
       category: 'startup',
       size: 9,
       description: 'A Georgia Tech spin‑out building brain‑computer interfaces for neuroprosthetics.',
-      website: 'https://example.com/neurotech-labs'
-      , image_url: 'https://via.placeholder.com/200?text=NeuroTech'
+      website: 'https://example.com/neurotech-labs',
+      image_url: 'https://placehold.co/200x200?text=NeuroTech'
     },
     {
       id: 'startup3',
@@ -67,8 +78,8 @@ window.DEX_DATA = {
       category: 'startup',
       size: 8,
       description: 'A biotech company using CRISPR to develop precision therapeutics.',
-      website: 'https://example.com/biogenix'
-      , image_url: 'https://via.placeholder.com/200?text=BioGenix'
+      website: 'https://example.com/biogenix',
+      image_url: 'https://placehold.co/200x200?text=BioGenix'
     },
     {
       id: 'vc1',
@@ -77,8 +88,8 @@ window.DEX_DATA = {
       category: 'investor',
       size: 12,
       description: 'A venture capital firm focused on early stage healthtech and life science startups.',
-      website: 'https://example.com/seed-capital'
-      , image_url: 'https://via.placeholder.com/200?text=Seed+Capital'
+      website: 'https://example.com/seed-capital',
+      image_url: 'https://placehold.co/200x200?text=Seed+Capital'
     },
     {
       id: 'vc2',
@@ -87,8 +98,8 @@ window.DEX_DATA = {
       category: 'investor',
       size: 13,
       description: 'A growth equity fund investing in frontier technologies including neurotech and AI.',
-      website: 'https://example.com/frontier-ventures'
-      , image_url: 'https://via.placeholder.com/200?text=Frontier'
+      website: 'https://example.com/frontier-ventures',
+      image_url: 'https://placehold.co/200x200?text=Frontier'
     },
     {
       id: 'gatech',
@@ -97,8 +108,8 @@ window.DEX_DATA = {
       category: 'university',
       size: 14,
       description: 'A leading public research university and a prolific source of spin‑out companies across engineering and life sciences.',
-      website: 'https://gatech.edu'
-      , image_url: 'https://via.placeholder.com/200?text=Georgia+Tech'
+      website: 'https://gatech.edu',
+      image_url: 'https://placehold.co/200x200?text=Georgia+Tech'
     },
     {
       id: 'emory',
@@ -107,8 +118,8 @@ window.DEX_DATA = {
       category: 'university',
       size: 14,
       description: 'A private research university in Atlanta known for its medical school and biotechnology research.',
-      website: 'https://emory.edu'
-      , image_url: 'https://via.placeholder.com/200?text=Emory'
+      website: 'https://emory.edu',
+      image_url: 'https://placehold.co/200x200?text=Emory'
     },
     {
       id: 'incubator1',
@@ -117,8 +128,8 @@ window.DEX_DATA = {
       category: 'incubator',
       size: 10,
       description: 'An incubator at Georgia Tech providing mentorship and resources to early stage startups.',
-      website: 'https://example.com/atdc'
-      , image_url: 'https://via.placeholder.com/200?text=ATDC'
+      website: 'https://example.com/atdc',
+      image_url: 'https://placehold.co/200x200?text=ATDC'
     },
     {
       id: 'service1',
@@ -127,8 +138,8 @@ window.DEX_DATA = {
       category: 'serviceProvider',
       size: 9,
       description: 'A law firm specialising in intellectual property and regulatory affairs for biotech startups.',
-      website: 'https://example.com/lawtech'
-      , image_url: 'https://via.placeholder.com/200?text=LawTech'
+      website: 'https://example.com/lawtech',
+      image_url: 'https://placehold.co/200x200?text=LawTech'
     },
     {
       id: 'service2',
@@ -137,8 +148,8 @@ window.DEX_DATA = {
       category: 'serviceProvider',
       size: 8,
       description: 'A consultancy helping startups navigate clinical trial design and regulatory strategy.',
-      website: 'https://example.com/bioconsulting'
-      , image_url: 'https://via.placeholder.com/200?text=BioConsulting'
+      website: 'https://example.com/bioconsulting',
+      image_url: 'https://placehold.co/200x200?text=BioConsulting'
     }
   ],
   links: [
@@ -156,8 +167,8 @@ window.DEX_DATA = {
 };
 
 // Sample persona alerts keyed by persona. In a production system these would
-// come from a backend service and be dynamically generated. Here they
-// reflect the examples provided in the Dex presentation.
+// come from a backend service and be dynamically generated. Here they reflect
+// the examples provided in the Dex presentation.
 window.DEX_ALERTS = {
   founder: [
     {
